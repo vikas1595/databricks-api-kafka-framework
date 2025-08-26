@@ -1,0 +1,33 @@
+data_products:
+  - product_name: "nyc_taxi_metrics"
+    source:
+      topic: "orders"
+    bronze:
+      table: "dbx_data_platform_dev_2885690652894387.bronze.nyc_taxi_metrics"
+      checkpoint_path: "/Volumes/dbx_data_platform_dev_2885690652894387/bronze/internal_files/checkpoints/nyc_taxi_metrics_bronze"
+      schema_string: >
+        vendor_id STRING, pickup_datetime STRING, dropoff_datetime STRING,
+        passenger_count INT, trip_distance DOUBLE, rate_code_id INT,
+        payment_type INT, fare_amount DOUBLE, tip_amount DOUBLE
+    silver:
+      table: "dbx_data_platform_dev_2885690652894387.silver.nyc_taxi_metrics"
+      checkpoint_path: "/Volumes/dbx_data_platform_dev_2885690652894387/silver/internal_files/checkpoints/nyc_taxi_metrics_silver"
+      transformations:
+        - "CAST(pickup_datetime AS TIMESTAMP) as pickup_datetime"
+        - "CAST(dropoff_datetime AS TIMESTAMP) as dropoff_datetime"
+      enrichments:
+        - "ROUND((unix_timestamp(dropoff_datetime) - unix_timestamp(pickup_datetime)) / 60, 2) AS trip_duration_minutes"
+      filters:
+        - "fare_amount > 0 AND trip_distance > 0"
+    gold:
+      table: "dbx_data_platform_dev_2885690652894387.gold.nyc_taxi_metrics"
+      checkpoint_path: "/Volumes/dbx_data_platform_dev_2885690652894387/gold/internal_files/checkpoints/nyc_taxi_metrics_gold"
+      aggregation:
+        group_by: ["vendor_id"]
+        window:
+          time_column: "pickup_datetime"
+          duration: "10 minutes"
+        expressions:
+          - "sum(fare_amount) as total_fare"
+          - "avg(tip_amount) as avg_tip"
+          - "sum(trip_distance) as total_distance"

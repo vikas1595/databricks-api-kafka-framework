@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "dab-kafka"
+version = "0.1.0"
+description = "Kafka + Databricks streaming project"
+authors = ["Vikas Patel <vikas.patel@equalexperts.com>"]
+readme = "README.md"
+packages = [{ include = "engine", from = "src" }]
+
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+databricks-connect = "~16.4"
+faker = "^25.8.0"
+kafka-python = "^2.0.2"
+pyyaml = "^6.0.1"
+dotenv = "^0.9.9"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = [
+    "tests",
+]
