@@ -1,0 +1,12 @@
+[
+  {
+    "source_name": "open_brewery_db",
+    "base_url": "https://api.openbrewerydb.org",
+    "relative_url": "/v1/breweries",
+    "destination": {
+      "container": "raw",
+      "path": "open_brewery_db/breweries",
+      "file_name": "data.json"
+    }
+  }
+]
